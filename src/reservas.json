@@ -1,0 +1,18 @@
+[
+    {
+      "nombre": "Kasane Teto",
+      "email": "Kasane_teto@gmail.com",
+      "telefono": "910011010",
+      "motivo": "Asesoría legal por plagio",
+      "hora": "09:00",
+      "fecha": "2025-04-18"
+    },
+    {
+      "nombre": "Hatsune Miku",
+      "email": "Miku_Hatsune@gmail.com",
+      "telefono": "901100101",
+      "motivo": "Asesoría legal por difamación ",
+      "hora": "16:00",
+      "fecha": "2025-04-18"
+    }
+  ]

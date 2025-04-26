@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+ <html lang="es">
+ <head>
+   <meta charset="UTF-8">
+   <title>Reserva de Hora</title>
+   <style>
+     body {
+       font-family: Arial, sans-serif;
+       padding: 20px;
+       text-align: center;
+     }
+     input, button, textarea {
+       margin: 10px;
+       padding: 10px;
+       width: 80%;
+       max-width: 300px;
+     }
+     .hora-disponible {
+       background-color: #4CAF50;
+       color: white;
+       border: none;
+       padding: 10px;
+       margin: 5px;
+       border-radius: 5px;
+       cursor: pointer;
+     }
+     .hora-reservada {
+       background-color: #e74c3c;
+       color: white;
+       border: none;
+       padding: 10px;
+       margin: 5px;
+       border-radius: 5px;
+       cursor: not-allowed;
+     }
+     #formularioReserva {
+       display: none;
+     }
+   </style>
+ </head>
+ <body>
+ 
+   <h1>Reserva de Horas</h1>
+ 
+   <label for="fecha">Selecciona una fecha:</label>
+   <input type="date" id="fecha" required>
+ 
+   <div id="calendario"></div>
+ 
+   <form id="formularioReserva">
+     <h2>Formulario de Reserva</h2>
+     <p>Fecha: <span id="diaSeleccionado"></span></p>
+     <p>Hora: <span id="horaSeleccionada"></span></p>
+     <input type="text" id="nombre" placeholder="Nombre completo" required>
+     <input type="email" id="email" placeholder="Correo electrónico" required>
+     <input type="tel" id="telefono" placeholder="Teléfono" required>
+     <textarea id="motivo" placeholder="Motivo de la consulta" required></textarea>
+     <button type="submit">Reservar</button>
+   </form>
+ 
+   <script>
+     const horarios = ["09:00", "10:00", "11:00", "12:00", "14:00", "15:00", "16:00"];
+     let reservas = [];
+     let fechaSeleccionada = "";
+ 
+     document.getElementById("fecha").addEventListener("change", (e) => {
+       fechaSeleccionada = e.target.value;
+       if (fechaSeleccionada) {
+         fetch("/reservas")
+           .then(res => res.json())
+           .then(data => {
+             reservas = data;
+             mostrarHorarios();
+           });
+       }
+     });
+ 
+     function mostrarHorarios() {
+       const contenedor = document.getElementById("calendario");
+       contenedor.innerHTML = "";
+ 
+       horarios.forEach(hora => {
+         const reservada = reservas.some(r => r.hora === hora && r.fecha === fechaSeleccionada);
+         const boton = document.createElement("button");
+         boton.textContent = hora;
+         boton.className = reservada ? "hora-reservada" : "hora-disponible";
+         if (!reservada) {
+           boton.addEventListener("click", () => seleccionarHora(hora));
+         }
+         contenedor.appendChild(boton);
+       });
+     }
+ 
+     function seleccionarHora(hora) {
+       document.getElementById("formularioReserva").style.display = "block";
+       document.getElementById("horaSeleccionada").textContent = hora;
+       document.getElementById("diaSeleccionado").textContent = fechaSeleccionada;
+     }
+ 
+     document.getElementById("formularioReserva").addEventListener("submit", (e) => {
+       e.preventDefault();
+ 
+       const nombre = document.getElementById("nombre").value;
+       const email = document.getElementById("email").value;
+       const telefono = document.getElementById("telefono").value;
+       const motivo = document.getElementById("motivo").value;
+       const hora = document.getElementById("horaSeleccionada").textContent;
+       const fecha = fechaSeleccionada;
+ 
+       const datos = { nombre, email, telefono, motivo, hora, fecha };
+ 
+       fetch("/reservas", {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify(datos)
+       })
+         .then(res => res.json())
+         .then(respuesta => {
+           if (respuesta.error) {
+             alert("Error: " + respuesta.error);
+           } else {
+             alert("Reserva confirmada para " + fecha + " a las " + hora);
+             location.reload();
+           }
+         });
+     });
+   </script>
+ 
+ </body>
+ </html>
