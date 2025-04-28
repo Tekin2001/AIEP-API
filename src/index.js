@@ -17,7 +17,12 @@ dotenv.config();
  app.use(express.json());                      //Permite al servidor entender solicitudes JSON
  app.use(express.urlencoded({ extended: false }));    //Permite procesar datos HTML
  app.use(express.static(path.join(__dirname, 'public')));               //Permite servir archivos HTML
- 
+
+ //ruta raiz
+ app.get('/', (req, res) => {
+     res.send('Bienvenido a API de Reservas');
+ });
+
  //routes endpoints
  const routeReservas = path.join(__dirname, 'reservas.json');//Guarda la ruta de reserva.json
  //_dirname apunta el directorio actual del JS 
